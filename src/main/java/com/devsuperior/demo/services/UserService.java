@@ -21,7 +21,9 @@ public class UserService implements UserDetailsService {
         user.setEmail(userOptional.getEmail());
         user.setPassword(userOptional.getPassword());
         user.setId(userOptional.getId());
-        user.setRoles(userOptional.getRoles());
+        userOptional.getRoles().forEach(role -> {
+            user.getRoles().add(role);
+        });
         return user;
     }
 }
