@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -15,15 +16,13 @@ public class UserService implements UserDetailsService {
     private UserRepository userRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         var userOptional = userRepository.findByEmail(username).orElseThrow(() -> new UsernameNotFoundException(username));
         User user = new User();
         user.setEmail(userOptional.getEmail());
         user.setPassword(userOptional.getPassword());
-        user.setId(userOptional.getId());
-        userOptional.getRoles().forEach(role -> {
-            user.getRoles().add(role);
-        });
+        userOptional.getRoles().forEach(role -> user.getRoles().add(role));
         return user;
     }
 }
